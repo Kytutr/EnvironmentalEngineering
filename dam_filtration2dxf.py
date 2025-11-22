@@ -1,8 +1,6 @@
 import datetime
 import ezdxf
 from ezdxf import zoom
-
-
 import numpy as np
 
 def main():
