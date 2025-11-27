@@ -25,7 +25,7 @@ library(optparse)
 option_list <- list(
     make_option(
         c("--Q"),
-        type = "integer",
+        type = "numeric",
         default = 0,
         help = "Przepływ [dm3*s-1]"
     ),
