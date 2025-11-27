@@ -10,3 +10,8 @@ This is a Gnuplot script for generating [water retention curve](https://en.wikip
 This is a Gnuplot script for graphical representation of main ions in drinking water samples:
 ![image](https://github.com/user-attachments/assets/2562b88c-255d-41a7-8017-b567c3df064a)
 
+## pipes_calculations.r
+This R will calculate which HDPE made pipe should be used in water distribution network. Just provide discharge parameter (Q) and get results.
+In my calculations I used [Tkachenko and Mileikovskyi (2020) approximation](https://link.springer.com/chapter/10.1007/978-3-030-57340-9_37) for [Darcy friction factor formulae](https://en.wikipedia.org/wiki/Darcy_friction_factor_formulae).
+For now this script is in Polish, stay tuned and patient for English one.
+<img width="1228" height="787" alt="image" src="https://github.com/user-attachments/assets/a419ebb6-52d9-4cd3-8d55-a2c42c2ebe02" />
