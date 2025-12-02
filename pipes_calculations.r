@@ -79,7 +79,8 @@ pipes_hdpe_pe100_sdr17_pn10 <- function() {
         InternalDiameter = NA,
         InternalRadius = NA,
         Q = NA,
-        u = NA
+        u = NA,
+        uManning = NA
     )
     
     pipes$InternalDiameter <- (pipes$PipeNumber - (pipes$WallThickness) *
@@ -154,6 +155,11 @@ rury$u <- apply(rury, 1, function(row) {
     water_velocity(row["Q"], row["InternalRadius"])
 })
 
+rury$u <- apply(rury, 1, function(row) {
+    water_velocity(row["Q"], row["InternalRadius"])
+})
+
+
 # If we have a preffered pipe diameter passed as argument form command line,
 # then we use it for calculations
 if (P > 0) {
@@ -195,7 +201,7 @@ Re = Reynolds_number(u, D, ro, mi)
 # Obliczamy współczynnik oporu za pomocą przybliżenia
 # Tkachenko-Mileikovskyi
 # (zawsze możemy tez użyć innych zdefiniowanych metod, patrz wyżej)
-lTM <- lambda_TkachenkoMileikovskyi(k, ((180 - 2 * 10.7) / 1000), Re)
+lTM <- lambda_TkachenkoMileikovskyi(k, D, Re)
 deltahTM <- deltah(lTM, D, u, g)
 
 print(paste("Po wykonaniu obliczeń dla Q=", Q, "[dm3*s-1]"))
