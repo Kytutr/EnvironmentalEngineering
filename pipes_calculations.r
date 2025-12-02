@@ -165,7 +165,6 @@ rury$u <- apply(rury, 1, function(row) {
 if (P > 0) {
     if (P %in% rury$PipeNumber) {
         prefferedPipe <- rury[rury$PipeNumber == P, ]
-        print(paste(prefferedPipe))
     } else{
         stop(paste(
             "Zła średnica rury. Użyj którejś z tej listy:",
