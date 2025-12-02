@@ -24,10 +24,16 @@ library(optparse)
 # a program sam dobierze rurę i obliczy straty
 option_list <- list(
     make_option(
-        c("--Q"),
+        c("-Q", "--Q"),
         type = "numeric",
         default = 0,
         help = "Przepływ [dm3*s-1]"
+    ),
+    make_option(
+        c("-P", "--P"),
+        type = "numeric",
+        default = 0,
+        help = "Średnica zewnętrzna rury (z predefiniowanej listy) [mm]"
     ),
     make_option(
         c("-v", "--verbose"),
@@ -41,6 +47,8 @@ opt <- parse_args(OptionParser(option_list = option_list))
 verbose <- opt$verbose
 
 Q <- opt$Q
+P <- opt$P
+
 # Jeśli nie chcemy uruchamiać programu z linii poleceń, to Q należy zdefiniować
 # w linijce poniżej i odkomentować
 # Q <- 10
@@ -53,7 +61,21 @@ Q <- opt$Q
 pipes_hdpe_pe100_sdr17_pn10 <- function() {
     pipes <- data.frame(
         PipeNumber = c(90, 110, 125, 140, 160, 180, 200, 225, 250, 280, 315, 355, 400),
-        WallThickness = c(5.4, 6.6, 7.4, 8.3, 9.5, 10.7, 11.9, 13.4, 14.8, 16.6, 18.7, 21.1, 23.7),
+        WallThickness = c(
+            5.4,
+            6.6,
+            7.4,
+            8.3,
+            9.5,
+            10.7,
+            11.9,
+            13.4,
+            14.8,
+            16.6,
+            18.7,
+            21.1,
+            23.7
+        ),
         InternalDiameter = NA,
         InternalRadius = NA,
         Q = NA,
@@ -132,21 +154,35 @@ rury$u <- apply(rury, 1, function(row) {
     water_velocity(row["Q"], row["InternalRadius"])
 })
 
-# Robimy listę preferowanych rur
-prefferedPipes <- rury[rury$u >= 0.6 & rury$u <= 0.9, ]
-
-if (nrow(prefferedPipes) == 0) {
-    subset <- rury[rury$u > 0.9, ]
-    prefferedPipe <- subset[nrow(subset), ]
-} else{
-    prefferedPipe <- prefferedPipes[1, ]
+# If we have a preffered pipe diameter passed as argument form command line,
+# then we use it for calculations
+if (P > 0) {
+    if (P %in% rury$PipeNumber) {
+        prefferedPipe <- rury[rury$PipeNumber == P, ]
+        print(paste(prefferedPipe))
+    } else{
+        stop(paste(
+            "Zła średnica rury. Użyj którejś z tej listy:",
+            toString(rury$PipeNumber)
+        ))
+    }
+} else {
+    # Otherwise we let the script pick the right pipe
+    prefferedPipes <- rury[rury$u >= 0.6 & rury$u <= 0.9, ]
+    
+    if (nrow(prefferedPipes) == 0) {
+        subset <- rury[rury$u > 0.9, ]
+        prefferedPipe <- subset[nrow(subset), ]
+    } else{
+        prefferedPipe <- prefferedPipes[1, ]
+    }
+    
+    if (nrow(prefferedPipe) == 0) {
+        subset <- rury[rury$u < 0.6, ]
+        prefferedPipe <- subset[1, ]
+    }
+    
 }
-
-if (nrow(prefferedPipe) == 0) {
-    subset <- rury[rury$u < 0.6, ]
-    prefferedPipe <- subset[1, ]
-}
-
 # Pobieramy parametry do obliczania liczby Reynoldsa dla rury,
 # która jest najbliżej optymalnych parametrów
 D <- prefferedPipe$InternalDiameter
