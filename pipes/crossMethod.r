@@ -18,13 +18,30 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+library(optparse)
 library(readr)
 library(writexl)
 
 source("PipesCalculations.r")
 
-cross <- read_csv("file.csv")
+# Parsing command arguments for inupt and output
+option_list <- list(
+    make_option(
+        c("-i", "--input"),
+        type = "character",
+        help = "Input file"
+    ),
+    make_option(
+        c("-o", "--output"),
+        type = "character",
+        default = "output",
+        help = "Output file"
+    )
+)
+opt <- parse_args(OptionParser(option_list = option_list))
+
+cross <- read_csv(opt$i)
+
 cross$Direction <- ifelse(cross$Qp >= cross$Qk,1,-1)
 cross <- cross[ , c(7,2,1,3,4,5,6)]
 
@@ -121,7 +138,7 @@ Approximation <- function(cross,step){
         cross <- cross[ , new_order]
 
         ### Write file:
-        write_xlsx(cross, paste0("file-",format(Sys.time(), "%Y-%m-%d_%H%M"),".xlsx"))
+        write_xlsx(cross, paste0(opt$o,format(Sys.time(), "%Y-%m-%d_%H%M"),".xlsx"))
         return(cross)
     } else {
         cross[[paste0("h",step,"Q",step)]] <- ifelse(cross$Ring == 1, cross[[paste0("h",step)]]/cross[[paste0("Q",step)]], NA)
@@ -134,4 +151,4 @@ Approximation <- function(cross,step){
     }
 }
 
-cross <- Approximation(cross,1)cross <- Approximation(cross,1)
+cross <- Approximation(cross,1)
