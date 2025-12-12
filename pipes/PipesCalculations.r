@@ -33,12 +33,12 @@ k = 0.00005 # chropowatośc bezwzględna [m]
 # Dane spisane wg. katalogu Pipelife: https://www.pipelife.pl/content/dam/pipelife/poland/marketing/downloads/bibliotekapdf/katalogi_techniczne_pdf/K_SysCisnieniowe_Pipelfe.pdf
 pipes_hdpe_pe100_sdr17_pn10 <- function() {
     pipes <- data.frame(
-#        PipeNumber = c(90, 110, 125, 140, 160, 180, 200, 225, 250, 280, 315, 355, 400),
-        PipeNumber = c(90, 110, 125, 160, 180, 200, 225, 250, 280, 315, 355, 400),
+        PipeNumber = c(90, 110, 125, 140, 160, 180, 200, 225, 250, 280, 315, 355, 400),
         WallThickness = c(
             5.4,
             6.6,
             7.4,
+            8.3,
             9.5,
             10.7,
             11.9,
