@@ -33,12 +33,12 @@ k = 0.00005 # chropowatośc bezwzględna [m]
 # Dane spisane wg. katalogu Pipelife: https://www.pipelife.pl/content/dam/pipelife/poland/marketing/downloads/bibliotekapdf/katalogi_techniczne_pdf/K_SysCisnieniowe_Pipelfe.pdf
 pipes_hdpe_pe100_sdr17_pn10 <- function() {
     pipes <- data.frame(
-        PipeNumber = c(90, 110, 125, 140, 160, 180, 200, 225, 250, 280, 315, 355, 400),
+#        PipeNumber = c(90, 110, 125, 140, 160, 180, 200, 225, 250, 280, 315, 355, 400),
+        PipeNumber = c(90, 110, 125, 160, 180, 200, 225, 250, 280, 315, 355, 400),
         WallThickness = c(
             5.4,
             6.6,
             7.4,
-            8.3,
             9.5,
             10.7,
             11.9,
@@ -54,11 +54,11 @@ pipes_hdpe_pe100_sdr17_pn10 <- function() {
         Q = NA,
         u = NA
     )
-    
+
     pipes$IntD <- (pipes$PipeNumber - (pipes$WallThickness) *
                                    2) / 1000
     pipes$InternalRadius <- (pipes$IntD / 2)
-    
+
     return(pipes)
 }
 
@@ -89,7 +89,7 @@ ReynoldsNumber <- function(u, D, ro, mi) {
 PickAPipeByNumber <- function(Q,P){
     pipes <- pipes_hdpe_pe100_sdr17_pn10()
     prefferedPipe <- pipes
-    
+
     if (P %in% pipes$PipeNumber) {
         prefferedPipe <- pipes[pipes$PipeNumber == P, ]
     } else{
@@ -97,10 +97,10 @@ PickAPipeByNumber <- function(Q,P){
             "Zła średnica rury. Użyj którejś z tej listy:",
         ))
     }
-    
+
     prefferedPipe$Q <- Q
     prefferedPipe$u <- apply(prefferedPipe, 1, function(row) {
-        water_velocity(row["Q"], row["InternalRadius"])
+        WaterVelocity(row["Q"], row["InternalRadius"])
     })
 
     return(prefferedPipe)
@@ -108,27 +108,27 @@ PickAPipeByNumber <- function(Q,P){
 
 PickAPipe <- function(Q){
     pipes <- pipes_hdpe_pe100_sdr17_pn10()
-    
+
     pipes$Q <- Q
     pipes$u <- apply(pipes, 1, function(row) {
-        water_velocity(row["Q"], row["InternalRadius"])
+        WaterVelocity(row["Q"], row["InternalRadius"])
     })
 
     # Otherwise we let the script pick the right pipe
     prefferedPipes <- pipes[pipes$u >= 0.6 & pipes$u <= 0.9, ]
-    
+
     if (nrow(prefferedPipes) == 0) {
         subset <- pipes[pipes$u > 0.9, ]
         prefferedPipe <- subset[nrow(subset), ]
     } else{
         prefferedPipe <- prefferedPipes[1, ]
     }
-    
+
     if (nrow(prefferedPipe) == 0) {
         subset <- pipes[pipes$u < 0.6, ]
         prefferedPipe <- subset[1, ]
     }
-    
+
     return(prefferedPipe)
 }
 
